@@ -2,10 +2,7 @@ name: rekkoo-prod
 
 services:
   app:
-    build:
-      context: .
-      args:
-        - VITE_API_URL=${VITE_API_URL}
+    image: rekkoo-app:latest  # This will use the saved/loaded image in production
     container_name: rekkoo-prod-app
     env_file:
       - .env

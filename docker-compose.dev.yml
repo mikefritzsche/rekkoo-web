@@ -2,11 +2,26 @@ name: rekkoo-dev
 
 services:
   app:
+    build:
+      context: .
+      args:
+        - VITE_API_URL=${VITE_API_URL}
     container_name: rekkoo-dev-app
     env_file:
       - .env.local
+    volumes:
+      - ./src:/app/src
+      - ./public:/app/public
+    command: npm run dev
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=proxy"
       - "traefik.http.services.rekkoo.loadbalancer.server.port=80"
       - "traefik.http.routers.rekkoo.rule=Host(`rekkoo.local`)"
+    networks:
+      - proxy
+
+networks:
+  proxy:
+    external: true
+    name: proxy
