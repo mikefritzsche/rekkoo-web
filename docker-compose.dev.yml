@@ -4,20 +4,21 @@ services:
   app:
     build:
       context: .
-      args:
-        - VITE_API_URL=${VITE_API_URL}
+      dockerfile: Dockerfile.dev  # Use specific dev Dockerfile
     container_name: rekkoo-dev-app
     env_file:
       - .env.local
     volumes:
       - ./src:/app/src
       - ./public:/app/public
-    command: npm run dev
+      # Add node_modules volume to prevent overwriting by host mount
+      - /app/node_modules
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=proxy"
-      - "traefik.http.services.rekkoo.loadbalancer.server.port=80"
-      - "traefik.http.routers.rekkoo.rule=Host(`rekkoo.local`)"
+      - "traefik.http.routers.rekkoo-dev.rule=Host(`rekkoo.local`)"
+      - "traefik.http.routers.rekkoo-dev.entrypoints=web"
+      - "traefik.http.services.rekkoo-dev.loadbalancer.server.port=5174"
     networks:
       - proxy
 
