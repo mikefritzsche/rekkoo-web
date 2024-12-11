@@ -3,7 +3,7 @@ name: rekkoo-prod
 services:
   app:
     image: rekkoo-app:latest  # This will use the saved/loaded image in production
-    container_name: rekkoo-prod-app
+    container_name: rekkoo-web
     env_file:
       - .env
     labels:
