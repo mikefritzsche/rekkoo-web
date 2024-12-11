@@ -20,27 +20,26 @@ jobs:
       - add_ssh_keys:
           fingerprints:
             - ${HETZNER_SSH_KEY_FINGERPRINT}
-      # Add SSH config to prefer ed25519
-      - run:
-          name: Setup SSH Config
-          command: |
-            mkdir -p ~/.ssh
-            echo "Host *
-              IdentityFile ~/.ssh/id_ed25519
-              PreferredAuthentications publickey
-              PubkeyAcceptedKeyTypes ssh-ed25519" > ~/.ssh/config
-            chmod 600 ~/.ssh/config
-      - run:
-          name: Test SSH Connection
-          command: |
-            echo "Testing SSH connection..."
-            ssh -v -o StrictHostKeyChecking=no ${HETZNER_DEPLOY_USER}@${HETZNER_VPS_HOST} 'echo "SSH connection successful"'
       - run:
           name: Create production env file
           command: |
             echo "Creating .env file on remote server..."
             echo "VITE_API_URL=${VITE_API_URL}" | ssh -o StrictHostKeyChecking=no ${HETZNER_DEPLOY_USER}@${HETZNER_VPS_HOST} 'cat > /home/rekkoo/web/.env'
             echo ".env file created successfully"
+      - run:
+          name: Copy Docker Compose files
+          command: |
+            echo "Copying Docker Compose files..."
+            # Ensure directory exists
+            ssh -o StrictHostKeyChecking=no ${HETZNER_DEPLOY_USER}@${HETZNER_VPS_HOST} 'mkdir -p /home/rekkoo/web'
+            
+            # Copy the files
+            scp -o StrictHostKeyChecking=no \
+              docker-compose.yml \
+              docker-compose.prod.yml \
+              ${HETZNER_DEPLOY_USER}@${HETZNER_VPS_HOST}:/home/rekkoo/web/
+            
+            echo "Docker Compose files copied successfully"
       - run:
           name: Debug Deploy to Hetzner
           command: |
@@ -49,6 +48,8 @@ jobs:
               set -x
               cd /home/rekkoo/web && \
               echo "Current directory: $(pwd)" && \
+              echo "Listing directory contents:" && \
+              ls -la && \
               echo "Pulling images..." && \
               docker compose -f docker-compose.yml -f docker-compose.prod.yml pull && \
               echo "Pull completed" && \
