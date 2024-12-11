@@ -1,0 +1,7 @@
+services:
+  app:
+    labels:
+      - "traefik.http.routers.rekkoo.rule=Host(`rekkoo.com`) || Host(`www.rekkoo.com`)"
+      - "traefik.http.routers.rekkoo.entrypoints=websecure"
+      - "traefik.http.routers.rekkoo.tls=true"
+      - "traefik.http.routers.rekkoo.tls.certresolver=letsencrypt"

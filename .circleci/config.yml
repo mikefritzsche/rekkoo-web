@@ -1,0 +1,49 @@
+# .circleci/config.yml
+version: 2.1
+
+orbs:
+  slack: circleci/slack@4.12.5
+
+executors:
+  node-docker:
+    docker:
+      - image: cimg/node:20.0
+    resource_class: medium
+
+jobs:
+  build-and-deploy:
+    executor: node-docker
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: 20.10.14
+          docker_layer_caching: true
+      - run:
+          name: Build Docker image
+          command: |
+            docker build -t rekkoo-app \
+              --build-arg VITE_API_URL=${VITE_API_URL} .
+      - run:
+          name: Deploy to Hetzner
+          command: |
+            ssh -o StrictHostKeyChecking=no ${SSH_USER}@${SSH_HOST} 'cd /path/to/app && \
+            docker compose -f docker-compose.yml -f docker-compose.prod.yml pull && \
+            docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d'
+      - slack/notify:
+          event: pass
+          template: success_tagged_deploy_1
+      - slack/notify:
+          event: fail
+          template: basic_fail_1
+
+workflows:
+  version: 2
+  build-deploy:
+    jobs:
+      - build-and-deploy:
+          context:
+            - hetzner-deploy-secrets
+            - slack-secrets
+          filters:
+            branches:
+              only: main
