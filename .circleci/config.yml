@@ -18,7 +18,10 @@ jobs:
       - checkout
       - setup_remote_docker:
           docker_layer_caching: true
-      - docker/authenticate
+      # Fixed Docker authentication
+      - run:
+          name: Docker Login
+          command: echo $DOCKER_PASSWORD | docker login -u $DOCKER_USER --password-stdin
       - run:
           name: Build and Push Docker image
           command: |
