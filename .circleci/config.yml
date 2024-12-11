@@ -3,6 +3,7 @@ version: 2.1
 
 orbs:
   slack: circleci/slack@4.12.5
+  docker: circleci/docker@2.1.1
 
 executors:
   node-docker:
@@ -17,6 +18,18 @@ jobs:
       - checkout
       - setup_remote_docker:
           docker_layer_caching: true
+      - docker/authenticate
+      - run:
+          name: Build and Push Docker image
+          command: |
+            # Build the image
+            docker build -t ${DOCKER_USER}/rekkoo-app:${CIRCLE_SHA1} \
+              --build-arg VITE_API_URL=${VITE_API_URL} .
+            # Push to Docker Hub
+            docker push ${DOCKER_USER}/rekkoo-app:${CIRCLE_SHA1}
+            # Tag as latest
+            docker tag ${DOCKER_USER}/rekkoo-app:${CIRCLE_SHA1} ${DOCKER_USER}/rekkoo-app:latest
+            docker push ${DOCKER_USER}/rekkoo-app:latest
       - add_ssh_keys:
           fingerprints:
             - ${HETZNER_SSH_KEY_FINGERPRINT}
@@ -30,35 +43,25 @@ jobs:
           name: Copy Docker Compose files
           command: |
             echo "Copying Docker Compose files..."
-            # Ensure directory exists
             ssh -o StrictHostKeyChecking=no ${HETZNER_DEPLOY_USER}@${HETZNER_VPS_HOST} 'mkdir -p /home/rekkoo/web'
-            
-            # Copy the files
             scp -o StrictHostKeyChecking=no \
               docker-compose.yml \
               docker-compose.prod.yml \
               ${HETZNER_DEPLOY_USER}@${HETZNER_VPS_HOST}:/home/rekkoo/web/
-            
-            echo "Docker Compose files copied successfully"
       - run:
-          name: Debug Deploy to Hetzner
+          name: Deploy to Hetzner
           command: |
             echo "Starting deployment to Hetzner..."
-            ssh -o StrictHostKeyChecking=no ${HETZNER_DEPLOY_USER}@${HETZNER_VPS_HOST} '
-              set -x
+            # Export the image name for docker-compose
+            export DOCKER_IMAGE="${DOCKER_USER}/rekkoo-app:${CIRCLE_SHA1}"
+            # Pass the image name to the remote server
+            ssh -o StrictHostKeyChecking=no ${HETZNER_DEPLOY_USER}@${HETZNER_VPS_HOST} "
+              export DOCKER_IMAGE=${DOCKER_IMAGE} && \
               cd /home/rekkoo/web && \
-              echo "Current directory: $(pwd)" && \
-              echo "Listing directory contents:" && \
-              ls -la && \
-              echo "Pulling images..." && \
               docker compose -f docker-compose.yml -f docker-compose.prod.yml pull && \
-              echo "Pull completed" && \
-              echo "Starting containers..." && \
               docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d && \
-              echo "Containers started" && \
-              echo "Checking container status:" && \
               docker compose -f docker-compose.yml -f docker-compose.prod.yml ps
-            '
+            "
             echo "Deployment completed"
       - slack/notify:
           event: pass
@@ -76,6 +79,7 @@ workflows:
             - hetzner-deploy-secrets
             - slack-secrets
             - rekkoo-secrets
+            - do-secrets
           filters:
             branches:
               only: main
