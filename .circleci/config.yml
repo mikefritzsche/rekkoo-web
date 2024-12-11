@@ -28,7 +28,7 @@ jobs:
       - run:
           name: Deploy to Hetzner
           command: |
-            ssh -o StrictHostKeyChecking=no ${HETZNER_DEPLOY_USER}@${HETZNER_VPS_HOST} 'cd /path/to/app && \
+            ssh -o StrictHostKeyChecking=no ${HETZNER_DEPLOY_USER}@${HETZNER_VPS_HOST} 'cd /home/rekkoo/web && \
             docker compose -f docker-compose.yml -f docker-compose.prod.yml pull && \
             docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d'
       - slack/notify:
