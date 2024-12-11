@@ -22,23 +22,29 @@ commands:
       - run:
           name: Build Docker image
           command: |
-            echo "Building Docker image for << parameters.environment >>/${CIRCLE_BRANCH}..."
+            # Sanitize branch name for Docker
+            SAFE_BRANCH_NAME=$(echo ${CIRCLE_BRANCH} | tr '/' '-' | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9-]/-/g')
+            echo "Safe branch name: ${SAFE_BRANCH_NAME}"
+            
+            echo "Building Docker image for << parameters.environment >>/${SAFE_BRANCH_NAME}..."
             docker build -t rekkoo-app:${CIRCLE_SHA1} \
               --build-arg VITE_API_URL=${VITE_API_URL} .
-            docker tag rekkoo-app:${CIRCLE_SHA1} rekkoo-app-<< parameters.environment >>-${CIRCLE_BRANCH}:latest
+            docker tag rekkoo-app:${CIRCLE_SHA1} rekkoo-app-<< parameters.environment >>-${SAFE_BRANCH_NAME}:latest
       - run:
           name: Save Docker image
           command: |
+            SAFE_BRANCH_NAME=$(echo ${CIRCLE_BRANCH} | tr '/' '-' | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9-]/-/g')
             echo "Saving Docker image..."
             mkdir -p /tmp/docker-images
-            docker save rekkoo-app-<< parameters.environment >>-${CIRCLE_BRANCH}:latest | gzip > /tmp/docker-images/rekkoo-app.tar.gz
+            docker save rekkoo-app-<< parameters.environment >>-${SAFE_BRANCH_NAME}:latest | gzip > /tmp/docker-images/rekkoo-app.tar.gz
       - add_ssh_keys:
           fingerprints:
             - ${HETZNER_SSH_KEY_FINGERPRINT}
       - run:
           name: Deploy to Hetzner
           command: |
-            DEPLOY_DIR="/home/rekkoo/web-<< parameters.environment >>/${CIRCLE_BRANCH}"
+            SAFE_BRANCH_NAME=$(echo ${CIRCLE_BRANCH} | tr '/' '-' | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9-]/-/g')
+            DEPLOY_DIR="/home/rekkoo/web-<< parameters.environment >>/${SAFE_BRANCH_NAME}"
             
             echo "Starting deployment to ${DEPLOY_DIR}..."
             ssh -o StrictHostKeyChecking=no ${HETZNER_DEPLOY_USER}@${HETZNER_VPS_HOST} "
@@ -58,14 +64,13 @@ commands:
               echo 'Creating .env file...' && \
               echo 'VITE_API_URL=${VITE_API_URL}' > .env && \
               echo 'Starting containers...' && \
-              CIRCLE_BRANCH=${CIRCLE_BRANCH} \
+              CIRCLE_BRANCH=${SAFE_BRANCH_NAME} \
               DEPLOY_ENV=<< parameters.environment >> \
               docker compose -f docker-compose.yml -f docker-compose.<< parameters.environment >>.yml up -d && \
               echo 'Cleaning up...' && \
               rm rekkoo-app.tar.gz && \
-              echo 'Deployment completed for ${CIRCLE_BRANCH} to << parameters.environment >>'
+              echo 'Deployment completed for ${SAFE_BRANCH_NAME} to << parameters.environment >>'
             "
-
 jobs:
   deploy-prod:
     executor: node-docker

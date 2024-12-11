@@ -5,7 +5,7 @@ services:
   app:
     image: rekkoo-app-staging-${CIRCLE_BRANCH}:latest
     container_name: rekkoo-staging-${CIRCLE_BRANCH}
-    pull_policy: never  # Prevent trying to pull from registry
+    pull_policy: never
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=proxy"
