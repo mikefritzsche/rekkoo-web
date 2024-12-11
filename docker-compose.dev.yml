@@ -1,16 +1,16 @@
-# docker-compose.dev.yml (for remote branches)
+# docker-compose.dev.yml
 version: '3.8'
 
 services:
   app:
-    image: rekkoo-app-dev-${CIRCLE_BRANCH:-main}:latest
-    container_name: rekkoo-dev-${CIRCLE_BRANCH:-main}
+    image: rekkoo-app-dev-${CIRCLE_BRANCH}:latest
+    container_name: rekkoo-dev-${CIRCLE_BRANCH}
+    pull_policy: never  # Prevent trying to pull from registry
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=proxy"
       - "traefik.http.services.rekkoo-dev-${CIRCLE_BRANCH}.loadbalancer.server.port=80"
-      # Match when env=local is NOT present, but remote parameter is
-      - "traefik.http.routers.rekkoo-dev-${CIRCLE_BRANCH}.rule=Host(`dev.rekkoo.com`) && Query(`remote=${CIRCLE_BRANCH}`) && !Query(`env=local`)"
+      - "traefik.http.routers.rekkoo-dev-${CIRCLE_BRANCH}.rule=Host(`dev.rekkoo.com`) && Query(`remote=${CIRCLE_BRANCH}`)"
       - "traefik.http.routers.rekkoo-dev-${CIRCLE_BRANCH}.entrypoints=websecure"
       - "traefik.http.routers.rekkoo-dev-${CIRCLE_BRANCH}.tls=true"
       - "traefik.http.routers.rekkoo-dev-${CIRCLE_BRANCH}.tls.certresolver=letsencrypt"

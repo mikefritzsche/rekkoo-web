@@ -3,10 +3,14 @@ version: '3.8'
 
 services:
   app:
-    image: rekkoo-app-staging:latest
-    container_name: rekkoo-staging-app
+    image: rekkoo-app-staging-${CIRCLE_BRANCH}:latest
+    container_name: rekkoo-staging-${CIRCLE_BRANCH}
+    pull_policy: never  # Prevent trying to pull from registry
     labels:
-      - "traefik.http.routers.rekkoo-staging.rule=Host(`staging.rekkoo.com`)"
-      - "traefik.http.routers.rekkoo-staging.entrypoints=websecure"
-      - "traefik.http.routers.rekkoo-staging.tls=true"
-      - "traefik.http.routers.rekkoo-staging.tls.certresolver=letsencrypt"
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxy"
+      - "traefik.http.services.rekkoo-staging-${CIRCLE_BRANCH}.loadbalancer.server.port=80"
+      - "traefik.http.routers.rekkoo-staging-${CIRCLE_BRANCH}.rule=Host(`staging.rekkoo.com`) && Query(`remote=${CIRCLE_BRANCH}`)"
+      - "traefik.http.routers.rekkoo-staging-${CIRCLE_BRANCH}.entrypoints=websecure"
+      - "traefik.http.routers.rekkoo-staging-${CIRCLE_BRANCH}.tls=true"
+      - "traefik.http.routers.rekkoo-staging-${CIRCLE_BRANCH}.tls.certresolver=letsencrypt"
