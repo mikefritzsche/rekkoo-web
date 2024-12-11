@@ -21,10 +21,32 @@ jobs:
           fingerprints:
             - ${HETZNER_SSH_KEY_FINGERPRINT}
       - run:
+          name: Test SSH Connection
+          command: |
+            echo "Testing SSH connection..."
+            ssh -v -o StrictHostKeyChecking=no ${HETZNER_DEPLOY_USER}@${HETZNER_VPS_HOST} 'echo "SSH connection successful"'
+      - run:
           name: Create production env file
+          no_output_timeout: 1m
           command: |
             echo "Creating .env file on remote server..."
-            echo "VITE_API_URL=${VITE_API_URL}" | ssh -o StrictHostKeyChecking=no ${HETZNER_DEPLOY_USER}@${HETZNER_VPS_HOST} 'cat > /home/rekkoo/web/.env'
+            # First check if directory exists
+            ssh -o StrictHostKeyChecking=no ${HETZNER_DEPLOY_USER}@${HETZNER_VPS_HOST} '
+              if [ ! -d "/home/rekkoo/web" ]; then
+                echo "Directory does not exist"
+                exit 1
+              fi
+              echo "Directory exists"
+            '
+            
+            # Create env file with timeout
+            timeout 30s ssh -v -o StrictHostKeyChecking=no ${HETZNER_DEPLOY_USER}@${HETZNER_VPS_HOST} "touch /home/rekkoo/web/.env"
+            echo "VITE_API_URL=${VITE_API_URL}" > temp.env
+            timeout 30s scp -v -o StrictHostKeyChecking=no temp.env ${HETZNER_DEPLOY_USER}@${HETZNER_VPS_HOST}:/home/rekkoo/web/.env
+            rm temp.env
+            
+            # Verify file was created
+            ssh -o StrictHostKeyChecking=no ${HETZNER_DEPLOY_USER}@${HETZNER_VPS_HOST} 'cat /home/rekkoo/web/.env'
             echo ".env file created successfully"
       - run:
           name: Build Docker image
