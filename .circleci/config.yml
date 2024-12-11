@@ -38,7 +38,6 @@ commands:
       - run:
           name: Deploy to Hetzner
           command: |
-            # Create deployment directory
             DEPLOY_DIR="/home/rekkoo/web-<< parameters.environment >>/${CIRCLE_BRANCH}"
             
             echo "Starting deployment to ${DEPLOY_DIR}..."
@@ -46,14 +45,12 @@ commands:
               mkdir -p ${DEPLOY_DIR}
             "
             
-            # Copy files
             scp -o StrictHostKeyChecking=no \
               /tmp/docker-images/rekkoo-app.tar.gz \
               docker-compose.yml \
               docker-compose.<< parameters.environment >>.yml \
               ${HETZNER_DEPLOY_USER}@${HETZNER_VPS_HOST}:${DEPLOY_DIR}/
 
-            # Deploy
             ssh -o StrictHostKeyChecking=no ${HETZNER_DEPLOY_USER}@${HETZNER_VPS_HOST} "
               cd ${DEPLOY_DIR} && \
               echo 'Loading Docker image...' && \
@@ -109,7 +106,7 @@ workflows:
             branches:
               ignore:
                 - main
-                - /^dependabot.*/
+                - /.*dev.*/  # Ignore branches containing 'dev'
       - deploy-dev:
           context:
             - hetzner-deploy-secrets
@@ -117,6 +114,4 @@ workflows:
             - rekkoo-secrets
           filters:
             branches:
-              ignore:
-                - main
-                - /^dependabot.*/
+              only: /.*dev.*/  # Only run for branches containing 'dev'
