@@ -2,8 +2,10 @@ import { useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
+import useTitle from "./hooks/useTitle.js";
 
 function App() {
+  useTitle('Rekkoo::Staging')
   const [count, setCount] = useState(0)
 
   return (
