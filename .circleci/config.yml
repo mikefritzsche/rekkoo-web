@@ -21,10 +21,22 @@ jobs:
           fingerprints:
             - ${HETZNER_SSH_KEY_FINGERPRINT}
       - run:
+          name: Debug SSH Setup
+          command: |
+            # List available keys
+            echo "Available SSH keys:"
+            ls -la ~/.ssh/
+            
+            # Get key fingerprint
+            echo "SSH key fingerprint:"
+            ssh-keygen -E md5 -lf ~/.ssh/id_ed25519 || true
+      - run:
           name: Test SSH Connection
           command: |
             echo "Testing SSH connection..."
-            ssh -v -o StrictHostKeyChecking=no ${HETZNER_DEPLOY_USER}@${HETZNER_VPS_HOST} 'echo "SSH connection successful"'
+            ssh -v -o StrictHostKeyChecking=no \
+              -i ~/.ssh/id_ed25519 \
+              ${HETZNER_DEPLOY_USER}@${HETZNER_VPS_HOST} 'echo "SSH connection successful"'
       - run:
           name: Create production env file
           no_output_timeout: 1m
