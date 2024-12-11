@@ -24,9 +24,7 @@ jobs:
           name: Create production env file
           command: |
             echo "Creating .env file on remote server..."
-            ssh -v -o StrictHostKeyChecking=no ${HETZNER_DEPLOY_USER}@${HETZNER_VPS_HOST} 'cat > /home/rekkoo/web/.env << EOL
-            VITE_API_URL=${VITE_API_URL}
-            EOL'
+            echo "VITE_API_URL=${VITE_API_URL}" | ssh -o StrictHostKeyChecking=no ${HETZNER_DEPLOY_USER}@${HETZNER_VPS_HOST} 'cat > /home/rekkoo/web/.env'
             echo ".env file created successfully"
       - run:
           name: Build Docker image
@@ -39,29 +37,6 @@ jobs:
           name: Debug Deploy to Hetzner
           command: |
             echo "Starting deployment to Hetzner..."
-            echo "Checking SSH connection..."
-            ssh -v -o StrictHostKeyChecking=no ${HETZNER_DEPLOY_USER}@${HETZNER_VPS_HOST} 'echo "SSH connection successful"'
-            
-            echo "Checking if directory exists..."
-            ssh -o StrictHostKeyChecking=no ${HETZNER_DEPLOY_USER}@${HETZNER_VPS_HOST} '
-              if [ ! -d "/home/rekkoo/web" ]; then
-                echo "Directory /home/rekkoo/web does not exist"
-                exit 1
-              fi
-              echo "Directory exists"
-            '
-            
-            echo "Checking Docker status..."
-            ssh -o StrictHostKeyChecking=no ${HETZNER_DEPLOY_USER}@${HETZNER_VPS_HOST} '
-              echo "Docker version:"
-              docker --version
-              echo "Docker status:"
-              systemctl status docker --no-pager || true
-              echo "Docker compose version:"
-              docker compose version
-            '
-            
-            echo "Starting deployment..."
             ssh -v -o StrictHostKeyChecking=no ${HETZNER_DEPLOY_USER}@${HETZNER_VPS_HOST} '
               set -x
               cd /home/rekkoo/web && \
