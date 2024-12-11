@@ -21,16 +21,61 @@ jobs:
           fingerprints:
             - ${HETZNER_SSH_KEY_FINGERPRINT}
       - run:
+          name: Create production env file
+          command: |
+            echo "Creating .env file on remote server..."
+            ssh -v -o StrictHostKeyChecking=no ${HETZNER_DEPLOY_USER}@${HETZNER_VPS_HOST} 'cat > /home/rekkoo/web/.env << EOL
+            VITE_API_URL=${VITE_API_URL}
+            EOL'
+            echo ".env file created successfully"
+      - run:
           name: Build Docker image
           command: |
+            echo "Building Docker image..."
             docker build -t rekkoo-app \
               --build-arg VITE_API_URL=${VITE_API_URL} .
+            echo "Docker image built successfully"
       - run:
-          name: Deploy to Hetzner
+          name: Debug Deploy to Hetzner
           command: |
-            ssh -o StrictHostKeyChecking=no ${HETZNER_DEPLOY_USER}@${HETZNER_VPS_HOST} 'cd /home/rekkoo/web && \
-            docker compose -f docker-compose.yml -f docker-compose.prod.yml pull && \
-            docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d'
+            echo "Starting deployment to Hetzner..."
+            echo "Checking SSH connection..."
+            ssh -v -o StrictHostKeyChecking=no ${HETZNER_DEPLOY_USER}@${HETZNER_VPS_HOST} 'echo "SSH connection successful"'
+            
+            echo "Checking if directory exists..."
+            ssh -o StrictHostKeyChecking=no ${HETZNER_DEPLOY_USER}@${HETZNER_VPS_HOST} '
+              if [ ! -d "/home/rekkoo/web" ]; then
+                echo "Directory /home/rekkoo/web does not exist"
+                exit 1
+              fi
+              echo "Directory exists"
+            '
+            
+            echo "Checking Docker status..."
+            ssh -o StrictHostKeyChecking=no ${HETZNER_DEPLOY_USER}@${HETZNER_VPS_HOST} '
+              echo "Docker version:"
+              docker --version
+              echo "Docker status:"
+              systemctl status docker --no-pager || true
+              echo "Docker compose version:"
+              docker compose version
+            '
+            
+            echo "Starting deployment..."
+            ssh -v -o StrictHostKeyChecking=no ${HETZNER_DEPLOY_USER}@${HETZNER_VPS_HOST} '
+              set -x
+              cd /home/rekkoo/web && \
+              echo "Current directory: $(pwd)" && \
+              echo "Pulling images..." && \
+              docker compose -f docker-compose.yml -f docker-compose.prod.yml pull && \
+              echo "Pull completed" && \
+              echo "Starting containers..." && \
+              docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d && \
+              echo "Containers started" && \
+              echo "Checking container status:" && \
+              docker compose -f docker-compose.yml -f docker-compose.prod.yml ps
+            '
+            echo "Deployment completed"
       - slack/notify:
           event: pass
           template: success_tagged_deploy_1
@@ -46,6 +91,7 @@ workflows:
           context:
             - hetzner-deploy-secrets
             - slack-secrets
+            - rekkoo-secrets
           filters:
             branches:
               only: main
