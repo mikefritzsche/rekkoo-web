@@ -20,12 +20,17 @@ commands:
       - setup_remote_docker:
           docker_layer_caching: true
       - run:
+          name: Set branch variables
+          command: |
+            # Sanitize branch name and save it for reuse
+            SAFE_BRANCH_NAME=$(echo ${CIRCLE_BRANCH} | tr '/' '-' | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9-]/-/g')
+            echo "export SAFE_BRANCH_NAME=${SAFE_BRANCH_NAME}" >> $BASH_ENV
+            source $BASH_ENV
+            echo "Original branch: ${CIRCLE_BRANCH}"
+            echo "Safe branch: ${SAFE_BRANCH_NAME}"
+      - run:
           name: Build Docker image
           command: |
-            # Sanitize branch name for Docker
-            SAFE_BRANCH_NAME=$(echo ${CIRCLE_BRANCH} | tr '/' '-' | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9-]/-/g')
-            echo "Safe branch name: ${SAFE_BRANCH_NAME}"
-            
             echo "Building Docker image for << parameters.environment >>/${SAFE_BRANCH_NAME}..."
             docker build -t rekkoo-app:${CIRCLE_SHA1} \
               --build-arg VITE_API_URL=${VITE_API_URL} .
@@ -33,7 +38,6 @@ commands:
       - run:
           name: Save Docker image
           command: |
-            SAFE_BRANCH_NAME=$(echo ${CIRCLE_BRANCH} | tr '/' '-' | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9-]/-/g')
             echo "Saving Docker image..."
             mkdir -p /tmp/docker-images
             docker save rekkoo-app-<< parameters.environment >>-${SAFE_BRANCH_NAME}:latest | gzip > /tmp/docker-images/rekkoo-app.tar.gz
@@ -43,7 +47,6 @@ commands:
       - run:
           name: Deploy to Hetzner
           command: |
-            SAFE_BRANCH_NAME=$(echo ${CIRCLE_BRANCH} | tr '/' '-' | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9-]/-/g')
             DEPLOY_DIR="/home/rekkoo/web-<< parameters.environment >>/${SAFE_BRANCH_NAME}"
             
             echo "Starting deployment to ${DEPLOY_DIR}..."
@@ -64,13 +67,14 @@ commands:
               echo 'Creating .env file...' && \
               echo 'VITE_API_URL=${VITE_API_URL}' > .env && \
               echo 'Starting containers...' && \
-              CIRCLE_BRANCH=${SAFE_BRANCH_NAME} \
+              SAFE_BRANCH_NAME=${SAFE_BRANCH_NAME} \
               DEPLOY_ENV=<< parameters.environment >> \
               docker compose -f docker-compose.yml -f docker-compose.<< parameters.environment >>.yml up -d && \
               echo 'Cleaning up...' && \
               rm rekkoo-app.tar.gz && \
               echo 'Deployment completed for ${SAFE_BRANCH_NAME} to << parameters.environment >>'
             "
+
 jobs:
   deploy-prod:
     executor: node-docker

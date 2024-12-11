@@ -1,16 +1,14 @@
 # docker-compose.dev.yml
-version: '3.8'
-
 services:
   app:
-    image: rekkoo-app-dev-${CIRCLE_BRANCH}:latest
-    container_name: rekkoo-dev-${CIRCLE_BRANCH}
+    image: rekkoo-app-dev-${SAFE_BRANCH_NAME}:latest
+    container_name: rekkoo-dev-${SAFE_BRANCH_NAME}
     pull_policy: never
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=proxy"
-      - "traefik.http.services.rekkoo-dev-${CIRCLE_BRANCH}.loadbalancer.server.port=80"
-      - "traefik.http.routers.rekkoo-dev-${CIRCLE_BRANCH}.rule=Host(`dev.rekkoo.com`) && Query(`remote=${CIRCLE_BRANCH}`)"
-      - "traefik.http.routers.rekkoo-dev-${CIRCLE_BRANCH}.entrypoints=websecure"
-      - "traefik.http.routers.rekkoo-dev-${CIRCLE_BRANCH}.tls=true"
-      - "traefik.http.routers.rekkoo-dev-${CIRCLE_BRANCH}.tls.certresolver=letsencrypt"
+      - "traefik.http.services.rekkoo-dev-${SAFE_BRANCH_NAME}.loadbalancer.server.port=80"
+      - "traefik.http.routers.rekkoo-dev-${SAFE_BRANCH_NAME}.rule=Host(`dev.rekkoo.com`) && Query(`remote`, `${SAFE_BRANCH_NAME}`)"
+      - "traefik.http.routers.rekkoo-dev-${SAFE_BRANCH_NAME}.entrypoints=websecure"
+      - "traefik.http.routers.rekkoo-dev-${SAFE_BRANCH_NAME}.tls=true"
+      - "traefik.http.routers.rekkoo-dev-${SAFE_BRANCH_NAME}.tls.certresolver=letsencrypt"
