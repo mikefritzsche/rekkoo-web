@@ -16,3 +16,10 @@ Currently, two official plugins are available:
 
 ### Github
 -  gh repo create rekkoo-web --public --source=. --remote=upstream
+
+Then access: dev.rekkoo.com?env=local
+
+For remote branches:
+Push to any branch and access via dev.rekkoo.com?remote=branch-name
+
+dev.rekkoo.com?remote=feature-branch

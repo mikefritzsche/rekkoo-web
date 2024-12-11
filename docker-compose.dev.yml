@@ -1,28 +1,16 @@
-name: rekkoo-dev
+# docker-compose.dev.yml (for remote branches)
+version: '3.8'
 
 services:
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile.dev  # Use specific dev Dockerfile
-    container_name: rekkoo-dev-app
-    env_file:
-      - .env.local
-    volumes:
-      - ./src:/app/src
-      - ./public:/app/public
-      # Add node_modules volume to prevent overwriting by host mount
-      - /app/node_modules
+    image: rekkoo-app-dev-${CIRCLE_BRANCH:-main}:latest
+    container_name: rekkoo-dev-${CIRCLE_BRANCH:-main}
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=proxy"
-      - "traefik.http.routers.rekkoo-dev.rule=Host(`rekkoo.local`)"
-      - "traefik.http.routers.rekkoo-dev.entrypoints=web"
-      - "traefik.http.services.rekkoo-dev.loadbalancer.server.port=5174"
-    networks:
-      - proxy
-
-networks:
-  proxy:
-    external: true
-    name: proxy
+      - "traefik.http.services.rekkoo-dev-${CIRCLE_BRANCH}.loadbalancer.server.port=80"
+      # Match when env=local is NOT present, but remote parameter is
+      - "traefik.http.routers.rekkoo-dev-${CIRCLE_BRANCH}.rule=Host(`dev.rekkoo.com`) && Query(`remote=${CIRCLE_BRANCH}`) && !Query(`env=local`)"
+      - "traefik.http.routers.rekkoo-dev-${CIRCLE_BRANCH}.entrypoints=websecure"
+      - "traefik.http.routers.rekkoo-dev-${CIRCLE_BRANCH}.tls=true"
+      - "traefik.http.routers.rekkoo-dev-${CIRCLE_BRANCH}.tls.certresolver=letsencrypt"

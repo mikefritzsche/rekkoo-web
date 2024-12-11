@@ -10,9 +10,11 @@ executors:
       - image: cimg/node:20.0
     resource_class: medium
 
-jobs:
-  build-and-deploy:
-    executor: node-docker
+commands:
+  deploy:
+    parameters:
+      environment:
+        type: string
     steps:
       - checkout
       - setup_remote_docker:
@@ -20,62 +22,77 @@ jobs:
       - run:
           name: Build Docker image
           command: |
-            echo "Building Docker image..."
+            echo "Building Docker image for << parameters.environment >>/${CIRCLE_BRANCH}..."
             docker build -t rekkoo-app:${CIRCLE_SHA1} \
               --build-arg VITE_API_URL=${VITE_API_URL} .
-            docker tag rekkoo-app:${CIRCLE_SHA1} rekkoo-app:latest
+            docker tag rekkoo-app:${CIRCLE_SHA1} rekkoo-app-<< parameters.environment >>-${CIRCLE_BRANCH}:latest
       - run:
           name: Save Docker image
           command: |
             echo "Saving Docker image..."
             mkdir -p /tmp/docker-images
-            docker save rekkoo-app:latest | gzip > /tmp/docker-images/rekkoo-app.tar.gz
+            docker save rekkoo-app-<< parameters.environment >>-${CIRCLE_BRANCH}:latest | gzip > /tmp/docker-images/rekkoo-app.tar.gz
       - add_ssh_keys:
           fingerprints:
             - ${HETZNER_SSH_KEY_FINGERPRINT}
       - run:
-          name: Copy files to server
+          name: Deploy to Hetzner
           command: |
-            echo "Creating directories on remote server..."
-            ssh -o StrictHostKeyChecking=no ${HETZNER_DEPLOY_USER}@${HETZNER_VPS_HOST} 'mkdir -p /home/rekkoo/web'
+            # Create deployment directory
+            DEPLOY_DIR="/home/rekkoo/web-<< parameters.environment >>/${CIRCLE_BRANCH}"
             
-            echo "Copying Docker image and config files..."
+            echo "Starting deployment to ${DEPLOY_DIR}..."
+            ssh -o StrictHostKeyChecking=no ${HETZNER_DEPLOY_USER}@${HETZNER_VPS_HOST} "
+              mkdir -p ${DEPLOY_DIR}
+            "
+            
+            # Copy files
             scp -o StrictHostKeyChecking=no \
               /tmp/docker-images/rekkoo-app.tar.gz \
               docker-compose.yml \
-              docker-compose.prod.yml \
-              ${HETZNER_DEPLOY_USER}@${HETZNER_VPS_HOST}:/home/rekkoo/web/
-            
-            echo "Creating .env file..."
-            echo "VITE_API_URL=${VITE_API_URL}" | ssh -o StrictHostKeyChecking=no ${HETZNER_DEPLOY_USER}@${HETZNER_VPS_HOST} 'cat > /home/rekkoo/web/.env'
-      - run:
-          name: Deploy to Hetzner
-          command: |
-            echo "Starting deployment to Hetzner..."
+              docker-compose.<< parameters.environment >>.yml \
+              ${HETZNER_DEPLOY_USER}@${HETZNER_VPS_HOST}:${DEPLOY_DIR}/
+
+            # Deploy
             ssh -o StrictHostKeyChecking=no ${HETZNER_DEPLOY_USER}@${HETZNER_VPS_HOST} "
-              cd /home/rekkoo/web && \
+              cd ${DEPLOY_DIR} && \
               echo 'Loading Docker image...' && \
               gunzip -c rekkoo-app.tar.gz | docker load && \
+              echo 'Creating .env file...' && \
+              echo 'VITE_API_URL=${VITE_API_URL}' > .env && \
               echo 'Starting containers...' && \
-              docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d && \
+              CIRCLE_BRANCH=${CIRCLE_BRANCH} \
+              DEPLOY_ENV=<< parameters.environment >> \
+              docker compose -f docker-compose.yml -f docker-compose.<< parameters.environment >>.yml up -d && \
               echo 'Cleaning up...' && \
               rm rekkoo-app.tar.gz && \
-              echo 'Container status:' && \
-              docker compose -f docker-compose.yml -f docker-compose.prod.yml ps
+              echo 'Deployment completed for ${CIRCLE_BRANCH} to << parameters.environment >>'
             "
-            echo "Deployment completed"
-      - slack/notify:
-          event: pass
-          template: success_tagged_deploy_1
-      - slack/notify:
-          event: fail
-          template: basic_fail_1
+
+jobs:
+  deploy-prod:
+    executor: node-docker
+    steps:
+      - deploy:
+          environment: prod
+
+  deploy-staging:
+    executor: node-docker
+    steps:
+      - deploy:
+          environment: staging
+
+  deploy-dev:
+    executor: node-docker
+    steps:
+      - deploy:
+          environment: dev
 
 workflows:
   version: 2
   build-deploy:
     jobs:
-      - build-and-deploy:
+      - deploy-prod:
           context:
             - hetzner-deploy-secrets
             - slack-secrets
@@ -83,3 +100,23 @@ workflows:
           filters:
             branches:
               only: main
+      - deploy-staging:
+          context:
+            - hetzner-deploy-secrets
+            - slack-secrets
+            - rekkoo-secrets
+          filters:
+            branches:
+              ignore:
+                - main
+                - /^dependabot.*/
+      - deploy-dev:
+          context:
+            - hetzner-deploy-secrets
+            - slack-secrets
+            - rekkoo-secrets
+          filters:
+            branches:
+              ignore:
+                - main
+                - /^dependabot.*/
