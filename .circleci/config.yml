@@ -17,6 +17,9 @@ jobs:
       - checkout
       - setup_remote_docker:
           docker_layer_caching: true
+      - add_ssh_keys:
+          fingerprints:
+            - ${HETZNER_SSH_KEY_FINGERPRINT}
       - run:
           name: Build Docker image
           command: |
@@ -25,7 +28,7 @@ jobs:
       - run:
           name: Deploy to Hetzner
           command: |
-            ssh -o StrictHostKeyChecking=no ${SSH_USER}@${SSH_HOST} 'cd /path/to/app && \
+            ssh -o StrictHostKeyChecking=no ${HETZNER_DEPLOY_USER}@${HETZNER_VPS_HOST} 'cd /path/to/app && \
             docker compose -f docker-compose.yml -f docker-compose.prod.yml pull && \
             docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d'
       - slack/notify:
