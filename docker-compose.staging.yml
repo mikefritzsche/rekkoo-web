@@ -6,7 +6,7 @@ services:
       - "traefik.enable=true"
       - "traefik.docker.network=proxy"
       - "traefik.http.services.rekkoo-staging-${SAFE_BRANCH_NAME}.loadbalancer.server.port=80"
-      - "traefik.http.routers.rekkoo-staging-${SAFE_BRANCH_NAME}.rule=Host(`staging.rekkoo.com`)"
+      - "traefik.http.routers.rekkoo-staging-${SAFE_BRANCH_NAME}.rule=Host(`staging.rekkoo.com`) && Query(`branch`, `${SAFE_BRANCH_NAME}`)"
       - "traefik.http.routers.rekkoo-staging-${SAFE_BRANCH_NAME}.entrypoints=websecure"
       - "traefik.http.routers.rekkoo-staging-${SAFE_BRANCH_NAME}.tls=true"
       - "traefik.http.routers.rekkoo-staging-${SAFE_BRANCH_NAME}.service=rekkoo-staging-${SAFE_BRANCH_NAME}"
