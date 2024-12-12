@@ -10,11 +10,17 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=proxy"
-      - "traefik.http.routers.rekkoo-staging.rule=Host(`staging.rekkoo.com`)"
-      - "traefik.http.routers.rekkoo-staging.entrypoints=websecure"
-      - "traefik.http.routers.rekkoo-staging.tls=true"
-      - "traefik.http.routers.rekkoo-staging.tls.certresolver=letsencrypt"
-      - "traefik.http.services.rekkoo-staging.loadbalancer.server.port=80"
+      # Basic service and router setup
+      - "traefik.http.services.staging-${SAFE_BRANCH_NAME}.loadbalancer.server.port=80"
+      - "traefik.http.routers.staging-${SAFE_BRANCH_NAME}.service=staging-${SAFE_BRANCH_NAME}"
+      # Modified rule to handle query parameters
+      - "traefik.http.routers.staging-${SAFE_BRANCH_NAME}.rule=Host(`staging.rekkoo.com`)"
+      - "traefik.http.routers.staging-${SAFE_BRANCH_NAME}.entrypoints=websecure"
+      - "traefik.http.routers.staging-${SAFE_BRANCH_NAME}.tls=true"
+      - "traefik.http.routers.staging-${SAFE_BRANCH_NAME}.tls.certresolver=letsencrypt"
+      # Add middleware to handle query parameters
+      - "traefik.http.middlewares.query-strip.stripQueryParam.names=remote"
+      - "traefik.http.routers.staging-${SAFE_BRANCH_NAME}.middlewares=query-strip@docker"
 
 networks:
   proxy:
