@@ -2,7 +2,7 @@ name: rekkoo-${DEPLOY_ENV}
 
 services:
   app:
-    image: rekkoo-app-${DEPLOY_ENV}:latest
+    image: rekkoo-app-${DEPLOY_ENV}-${SAFE_BRANCH_NAME}:latest  # This matches what CI builds
     container_name: rekkoo-${DEPLOY_ENV}
     env_file:
       - .env
@@ -17,4 +17,3 @@ services:
 networks:
   proxy:
     external: true
-    name: proxy
