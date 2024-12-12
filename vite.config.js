@@ -1,10 +1,15 @@
-// vite.config.js
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { execSync } from 'child_process'
 
 const getGitBranch = () => {
   try {
+    // First try CircleCI specific environment variable
+    if (process.env.CIRCLE_BRANCH) {
+      return process.env.CIRCLE_BRANCH;
+    }
+
+    // Fallback to git command for local development
     const branch = execSync('git rev-parse --abbrev-ref HEAD').toString().trim()
     return branch
   } catch (error) {
