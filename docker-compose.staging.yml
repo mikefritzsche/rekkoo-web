@@ -3,14 +3,16 @@ version: '3.8'
 
 services:
   app:
-    image: rekkoo-app-staging-${CIRCLE_BRANCH}:latest
-    container_name: rekkoo-staging-${CIRCLE_BRANCH}
+    image: rekkoo-app-staging-${SAFE_BRANCH_NAME}:latest
+    container_name: rekkoo-staging-${SAFE_BRANCH_NAME}
     pull_policy: never
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=proxy"
-      - "traefik.http.services.rekkoo-staging-${CIRCLE_BRANCH}.loadbalancer.server.port=80"
-      - "traefik.http.routers.rekkoo-staging-${CIRCLE_BRANCH}.rule=Host(`staging.rekkoo.com`) && Query(`remote=${CIRCLE_BRANCH}`)"
-      - "traefik.http.routers.rekkoo-staging-${CIRCLE_BRANCH}.entrypoints=websecure"
-      - "traefik.http.routers.rekkoo-staging-${CIRCLE_BRANCH}.tls=true"
-      - "traefik.http.routers.rekkoo-staging-${CIRCLE_BRANCH}.tls.certresolver=letsencrypt"
+      # Make service name consistent
+      - "traefik.http.services.rekkoo-staging-${SAFE_BRANCH_NAME}.loadbalancer.server.port=80"
+      - "traefik.http.routers.rekkoo-staging-${SAFE_BRANCH_NAME}.service=rekkoo-staging-${SAFE_BRANCH_NAME}"
+      - "traefik.http.routers.rekkoo-staging-${SAFE_BRANCH_NAME}.rule=Host(`staging.rekkoo.com`) && Query(`remote`, `${SAFE_BRANCH_NAME}`)"
+      - "traefik.http.routers.rekkoo-staging-${SAFE_BRANCH_NAME}.entrypoints=websecure"
+      - "traefik.http.routers.rekkoo-staging-${SAFE_BRANCH_NAME}.tls=true"
+      - "traefik.http.routers.rekkoo-staging-${SAFE_BRANCH_NAME}.tls.certresolver=letsencrypt"
