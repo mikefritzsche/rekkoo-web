@@ -1,7 +1,21 @@
 services:
   app:
+    image: rekkoo-app-prod:latest
+    container_name: rekkoo-prod
+    networks:
+      - proxy
+    environment:
+      - VITE_API_URL=${VITE_API_URL}
     labels:
-      - "traefik.http.routers.rekkoo.rule=Host(`rekkoo.com`) || Host(`www.rekkoo.com`)"
-      - "traefik.http.routers.rekkoo.entrypoints=websecure"
-      - "traefik.http.routers.rekkoo.tls=true"
-      - "traefik.http.routers.rekkoo.tls.certresolver=letsencrypt"
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxy"
+      - "traefik.http.services.rekkoo-prod.loadbalancer.server.port=80"
+      - "traefik.http.routers.rekkoo-prod.rule=Host(`rekkoo.com`) || Host(`www.rekkoo.com`)"
+      - "traefik.http.routers.rekkoo-prod.entrypoints=websecure"
+      - "traefik.http.routers.rekkoo-prod.service=rekkoo-prod"
+      - "traefik.http.routers.rekkoo-prod.tls=true"
+      - "traefik.http.routers.rekkoo-prod.tls.certresolver=letsencrypt"
+
+networks:
+  proxy:
+    external: true
