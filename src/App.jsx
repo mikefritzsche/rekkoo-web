@@ -5,7 +5,7 @@ import './App.css'
 import useTitle from "./hooks/useTitle.js";
 // v0.0.2 - increment to force deployment
 function App() {
-  useTitle('Rekkoo::Staging')
+  useTitle()
   const [count, setCount] = useState(0)
 
   return (
