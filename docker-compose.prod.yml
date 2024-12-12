@@ -1,8 +1,12 @@
 services:
   app:
+    image: rekkoo-app-prod-main:latest
+    container_name: rekkoo-prod
     labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxy"
+      - "traefik.http.services.rekkoo-prod.loadbalancer.server.port=80"
       - "traefik.http.routers.rekkoo-prod.rule=Host(`rekkoo.com`) || Host(`www.rekkoo.com`)"
       - "traefik.http.routers.rekkoo-prod.entrypoints=websecure"
-      - "traefik.http.routers.rekkoo-prod.service=rekkoo-prod"
       - "traefik.http.routers.rekkoo-prod.tls=true"
-      - "traefik.http.routers.rekkoo-prod.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.rekkoo-prod.service=rekkoo-prod"
