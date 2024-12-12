@@ -1,4 +1,3 @@
-# .circleci/config.yml
 version: 2.1
 
 orbs:
@@ -32,9 +31,24 @@ commands:
           name: Build Docker image
           command: |
             echo "Building Docker image for << parameters.environment >>/${SAFE_BRANCH_NAME}..."
+            # Use appropriate Dockerfile based on environment
+            DOCKERFILE="Dockerfile"
+            if [ "<< parameters.environment >>" = "staging" ]; then
+              DOCKERFILE="Dockerfile.staging"
+            elif [ "<< parameters.environment >>" = "dev" ]; then
+              DOCKERFILE="Dockerfile.dev"
+            fi
+            echo "Using ${DOCKERFILE} for build..."
+            
+            # Build with environment-specific Dockerfile
             docker build -t rekkoo-app:${CIRCLE_SHA1} \
-              --build-arg VITE_API_URL=${VITE_API_URL} .
+              --build-arg VITE_API_URL=${VITE_API_URL} \
+              -f ${DOCKERFILE} .
             docker tag rekkoo-app:${CIRCLE_SHA1} rekkoo-app-<< parameters.environment >>-${SAFE_BRANCH_NAME}:latest
+            
+            # Verify build artifacts
+            echo "Verifying build artifacts..."
+            docker run --rm rekkoo-app:${CIRCLE_SHA1} ls -la /usr/share/nginx/html/assets || true
       - run:
           name: Save Docker image
           command: |
@@ -50,6 +64,10 @@ commands:
             DEPLOY_DIR="/home/rekkoo/web-<< parameters.environment >>/${SAFE_BRANCH_NAME}"
             
             echo "Starting deployment to ${DEPLOY_DIR}..."
+            echo "Environment: << parameters.environment >>"
+            echo "Branch: ${SAFE_BRANCH_NAME}"
+            echo "VITE_API_URL: ${VITE_API_URL}"
+            
             ssh -o StrictHostKeyChecking=no ${HETZNER_DEPLOY_USER}@${HETZNER_VPS_HOST} "
               mkdir -p ${DEPLOY_DIR}
             "
@@ -70,10 +88,22 @@ commands:
               SAFE_BRANCH_NAME=${SAFE_BRANCH_NAME} \
               DEPLOY_ENV=<< parameters.environment >> \
               docker compose -f docker-compose.yml -f docker-compose.<< parameters.environment >>.yml up -d && \
+              echo 'Checking container logs...' && \
+              docker logs rekkoo-<< parameters.environment >>-${SAFE_BRANCH_NAME} && \
+              echo 'Checking nginx configuration...' && \
+              docker exec rekkoo-<< parameters.environment >>-${SAFE_BRANCH_NAME} nginx -T && \
+              echo 'Verifying static assets...' && \
+              docker exec rekkoo-<< parameters.environment >>-${SAFE_BRANCH_NAME} ls -la /usr/share/nginx/html/assets && \
               echo 'Cleaning up...' && \
               rm rekkoo-app.tar.gz && \
               echo 'Deployment completed for ${SAFE_BRANCH_NAME} to << parameters.environment >>'
             "
+      - slack/notify:
+          event: fail
+          template: basic_fail_1
+      - slack/notify:
+          event: pass
+          template: success_tagged_deploy_1
 
 jobs:
   deploy-prod:
