@@ -1,4 +1,4 @@
-# docker-compose.staging.yml
+# docker-compose.staging.yml 0.0.1
 services:
   app:
     image: rekkoo-app-staging-${SAFE_BRANCH_NAME}:latest
