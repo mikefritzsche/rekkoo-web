@@ -5,7 +5,7 @@ import './App.css'
 import useTitle from "./hooks/useTitle.js";
 // v0.0.1
 function App() {
-  useTitle('Rekkoo::Staging')
+  useTitle('Rekkoo::Production')
   const [count, setCount] = useState(0)
 
   return (
