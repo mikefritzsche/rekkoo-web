@@ -1,13 +1,20 @@
-import { useEffect, useRef } from 'react'
+import { useRef, useEffect } from 'react';
 
-const useTitle = title => {
+const useTitle = () => {
   const documentDefined = typeof document !== 'undefined';
   const originalTitle = useRef(documentDefined ? document.title : null);
 
   useEffect(() => {
     if (!documentDefined) return;
 
-    if (document.title !== title) document.title = title;
+    const branchName = __GIT_BRANCH__;
+    const fullTitle = branchName === 'main'
+      ? 'Rekkoo'
+      : `Rekkoo::Development [${branchName}]`;
+
+    if (document.title !== fullTitle) {
+      document.title = fullTitle;
+    }
 
     return () => {
       document.title = originalTitle.current;
@@ -15,4 +22,4 @@ const useTitle = title => {
   }, []);
 };
 
-export default useTitle
+export default useTitle;
