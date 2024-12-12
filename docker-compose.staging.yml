@@ -1,12 +1,10 @@
-# docker-compose.staging.yml
-version: '3.8'
-
 services:
   app:
-    image: rekkoo-app-staging:latest
-    container_name: rekkoo-staging-app
+    image: rekkoo-app-staging-${SAFE_BRANCH_NAME}:latest
+    container_name: rekkoo-staging-${SAFE_BRANCH_NAME}
     labels:
-      - "traefik.http.routers.rekkoo-staging.rule=Host(`staging.rekkoo.com`)"
-      - "traefik.http.routers.rekkoo-staging.entrypoints=websecure"
-      - "traefik.http.routers.rekkoo-staging.tls=true"
-      - "traefik.http.routers.rekkoo-staging.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.staging-${SAFE_BRANCH_NAME}.rule=Host(`staging.rekkoo.com`)"
+      - "traefik.http.routers.staging-${SAFE_BRANCH_NAME}.entrypoints=websecure"
+      - "traefik.http.routers.staging-${SAFE_BRANCH_NAME}.service=staging-${SAFE_BRANCH_NAME}"
+      - "traefik.http.routers.staging-${SAFE_BRANCH_NAME}.tls=true"
+      - "traefik.http.routers.staging-${SAFE_BRANCH_NAME}.tls.certresolver=letsencrypt"

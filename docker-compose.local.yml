@@ -1,6 +1,4 @@
-# docker-compose.local.yml (for local development)
-version: '3.8'
-
+# docker-compose.local.yml
 services:
   app:
     build:
@@ -19,6 +17,5 @@ services:
       - "traefik.enable=true"
       - "traefik.docker.network=proxy"
       - "traefik.http.services.rekkoo-local.loadbalancer.server.port=5174"
-      # Match when env=local is present, regardless of remote parameter
-      - "traefik.http.routers.rekkoo-local.rule=Host(`dev.rekkoo.com`) && Query(`env=local`)"
+      - "traefik.http.routers.rekkoo-local.rule=Host(`rekkoo.local`)"
       - "traefik.http.routers.rekkoo-local.entrypoints=web"

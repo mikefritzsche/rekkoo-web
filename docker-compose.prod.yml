@@ -1,7 +1,8 @@
 services:
   app:
     labels:
-      - "traefik.http.routers.rekkoo.rule=Host(`rekkoo.com`) || Host(`www.rekkoo.com`)"
-      - "traefik.http.routers.rekkoo.entrypoints=websecure"
-      - "traefik.http.routers.rekkoo.tls=true"
-      - "traefik.http.routers.rekkoo.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.rekkoo-prod.rule=Host(`rekkoo.com`) || Host(`www.rekkoo.com`)"
+      - "traefik.http.routers.rekkoo-prod.entrypoints=websecure"
+      - "traefik.http.routers.rekkoo-prod.service=rekkoo-prod"
+      - "traefik.http.routers.rekkoo-prod.tls=true"
+      - "traefik.http.routers.rekkoo-prod.tls.certresolver=letsencrypt"
