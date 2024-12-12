@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
-  base: '/', // Add this line to ensure correct asset paths in production
+  base: '/',
   server: {
     host: '0.0.0.0',
     port: 5174,
@@ -14,10 +14,10 @@ export default defineConfig({
     manifest: true,
     rollupOptions: {
       output: {
-        // This ensures assets are loaded correctly regardless of URL parameters
-        assetFileNames: 'assets/[name]-[hash][extname]',
-        chunkFileNames: 'assets/[name]-[hash].js',
-        entryFileNames: 'assets/[name]-[hash].js',
+        // Ensure consistent asset paths
+        entryFileNames: 'assets/[name].[hash].js',
+        chunkFileNames: 'assets/[name].[hash].js',
+        assetFileNames: 'assets/[name].[hash].[ext]'
       }
     }
   }

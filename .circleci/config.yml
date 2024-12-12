@@ -62,17 +62,21 @@ commands:
           name: Deploy to Hetzner
           command: |
             DEPLOY_DIR="/home/rekkoo/web-<< parameters.environment >>/${SAFE_BRANCH_NAME}"
-            
-            echo "Starting deployment to ${DEPLOY_DIR}..."
-            echo "Environment: << parameters.environment >>"
-            echo "Branch: ${SAFE_BRANCH_NAME}"
+
+            # Debug environment variables
+            echo "Checking build variables:"
             echo "VITE_API_URL: ${VITE_API_URL}"
-            
+            echo "SAFE_BRANCH_NAME: ${SAFE_BRANCH_NAME}"
+
             ssh -o StrictHostKeyChecking=no ${HETZNER_DEPLOY_USER}@${HETZNER_VPS_HOST} "
               mkdir -p ${DEPLOY_DIR}
             "
-            
+
+            # Create a temporary .env file with the correct variables
+            echo "VITE_API_URL=${VITE_API_URL}" > .env.temp
+
             scp -o StrictHostKeyChecking=no \
+              .env.temp \
               /tmp/docker-images/rekkoo-app.tar.gz \
               docker-compose.yml \
               docker-compose.<< parameters.environment >>.yml \
@@ -80,23 +84,14 @@ commands:
 
             ssh -o StrictHostKeyChecking=no ${HETZNER_DEPLOY_USER}@${HETZNER_VPS_HOST} "
               cd ${DEPLOY_DIR} && \
+              mv .env.temp .env && \
               echo 'Loading Docker image...' && \
               gunzip -c rekkoo-app.tar.gz | docker load && \
-              echo 'Creating .env file...' && \
-              echo 'VITE_API_URL=${VITE_API_URL}' > .env && \
               echo 'Starting containers...' && \
+              VITE_API_URL=${VITE_API_URL} \
               SAFE_BRANCH_NAME=${SAFE_BRANCH_NAME} \
               DEPLOY_ENV=<< parameters.environment >> \
-              docker compose -f docker-compose.yml -f docker-compose.<< parameters.environment >>.yml up -d && \
-              echo 'Checking container logs...' && \
-              docker logs rekkoo-<< parameters.environment >>-${SAFE_BRANCH_NAME} && \
-              echo 'Checking nginx configuration...' && \
-              docker exec rekkoo-<< parameters.environment >>-${SAFE_BRANCH_NAME} nginx -T && \
-              echo 'Verifying static assets...' && \
-              docker exec rekkoo-<< parameters.environment >>-${SAFE_BRANCH_NAME} ls -la /usr/share/nginx/html/assets && \
-              echo 'Cleaning up...' && \
-              rm rekkoo-app.tar.gz && \
-              echo 'Deployment completed for ${SAFE_BRANCH_NAME} to << parameters.environment >>'
+              docker compose -f docker-compose.yml -f docker-compose.<< parameters.environment >>.yml up -d
             "
       - slack/notify:
           event: fail
