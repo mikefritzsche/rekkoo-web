@@ -4,17 +4,29 @@ import { execSync } from 'child_process'
 
 const getGitBranch = () => {
   try {
-    // First try CircleCI specific environment variable
+    // Log environment for debugging
+    console.log('NODE_ENV:', process.env.NODE_ENV);
+    console.log('CIRCLE_BRANCH:', process.env.CIRCLE_BRANCH);
+
+    // If we're in production, assume main branch
+    if (process.env.NODE_ENV === 'production') {
+      return 'main';
+    }
+
+    // Try CircleCI variable
     if (process.env.CIRCLE_BRANCH) {
+      console.log('Using CircleCI branch:', process.env.CIRCLE_BRANCH);
       return process.env.CIRCLE_BRANCH;
     }
 
-    // Fallback to git command for local development
-    const branch = execSync('git rev-parse --abbrev-ref HEAD').toString().trim()
-    return branch
+    // Try git command
+    const branch = execSync('git rev-parse --abbrev-ref HEAD').toString().trim();
+    console.log('Git command returned branch:', branch);
+    return branch;
   } catch (error) {
-    console.warn('Unable to get git branch:', error)
-    return 'unknown'
+    console.warn('Error getting git branch:', error);
+    // In production, default to main instead of unknown
+    return process.env.NODE_ENV === 'production' ? 'main' : 'unknown';
   }
 }
 
