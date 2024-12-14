@@ -1,6 +1,6 @@
 # docker-compose.local.yml
 services:
-  app:
+  rekoo-local:
     build:
       context: .
       dockerfile: Dockerfile.dev
