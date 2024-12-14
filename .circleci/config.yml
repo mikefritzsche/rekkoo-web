@@ -40,7 +40,6 @@ commands:
             fi
             echo "Using ${DOCKERFILE} for build..."
             
-            # Build with environment-specific Dockerfile
             docker build -t rekkoo-app:${CIRCLE_SHA1} \
               --build-arg VITE_API_URL=${VITE_API_URL} \
               -f ${DOCKERFILE} .
@@ -61,7 +60,7 @@ commands:
       - run:
           name: Deploy to Hetzner
           command: |
-            # Set base directory
+            # Set base directory and environment-specific paths
             BASE_DIR="/home/rekkoo/web"
             if [ "<< parameters.environment >>" = "prod" ]; then
               DEPLOY_DIR="${BASE_DIR}/prod"
@@ -70,24 +69,24 @@ commands:
               DEPLOY_DIR="${BASE_DIR}/<< parameters.environment >>/${SAFE_BRANCH_NAME}"
               COMPOSE_FILES="docker-compose.yml docker-compose.staging.yml"
             fi
-
+            
             echo "Starting deployment to ${DEPLOY_DIR}..."
             echo "Environment: << parameters.environment >>"
             echo "Branch: ${SAFE_BRANCH_NAME}"
-
+            
             # Create deployment directory
             ssh -o StrictHostKeyChecking=no ${HETZNER_DEPLOY_USER}@${HETZNER_VPS_HOST} "
               mkdir -p ${DEPLOY_DIR}
             "
-
-            # Copy only necessary files
+            
+            # Copy only necessary compose files and nginx conf
             for file in $COMPOSE_FILES nginx.conf; do
               scp -o StrictHostKeyChecking=no \
                 $file \
                 ${HETZNER_DEPLOY_USER}@${HETZNER_VPS_HOST}:${DEPLOY_DIR}/
             done
 
-            # Copy docker image
+            # Copy docker image separately
             scp -o StrictHostKeyChecking=no \
               /tmp/docker-images/rekkoo-app.tar.gz \
               ${HETZNER_DEPLOY_USER}@${HETZNER_VPS_HOST}:${DEPLOY_DIR}/
@@ -103,6 +102,10 @@ commands:
               SAFE_BRANCH_NAME=${SAFE_BRANCH_NAME} \
               DEPLOY_ENV=<< parameters.environment >> \
               docker compose -f docker-compose.yml -f docker-compose.<< parameters.environment >>.yml up -d && \
+              echo 'Checking container status...' && \
+              docker ps | grep rekkoo-<< parameters.environment >> && \
+              echo 'Checking container logs...' && \
+              docker logs rekkoo-<< parameters.environment >>-${SAFE_BRANCH_NAME} && \
               echo 'Cleaning up...' && \
               rm rekkoo-app.tar.gz && \
               echo 'Deployment completed for ${SAFE_BRANCH_NAME} to << parameters.environment >>'
