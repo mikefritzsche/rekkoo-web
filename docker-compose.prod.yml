@@ -1,5 +1,5 @@
 services:
-  app:
+  rekkoo-web:
     image: rekkoo-app-prod-main:latest
     container_name: rekkoo-prod
     labels:

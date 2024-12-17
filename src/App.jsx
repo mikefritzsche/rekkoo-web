@@ -1,6 +1,6 @@
 import './App.css'
 import useTitle from "./hooks/useTitle.js";
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout';
 import LandingPage from './components/LandingPage';
 import FeaturesPage from './components/FeaturesPage';
@@ -10,28 +10,40 @@ import AboutPage from "./components/AboutPage.jsx";
 import AIFeatures from "./components/features/AIFeatures.jsx";
 import SocialFeatures from "./components/features/SocialFeatures.jsx";
 import AutomationFeatures from "./components/features/AutomationFeatures.jsx";
+import LoginPage from './components/auth/LoginPage';
+import RegisterPage from './components/auth/RegisterPage';
+import Dashboard from './components/Dashboard';
+import ProtectedRoute from './components/auth/ProtectedRoute';
 
-// v0.0.1
 function App() {
   useTitle()
 
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Layout />}>
-          <Route index element={<LandingPage />} />
-          <Route path="features" element={<FeaturesPage />} />
-          {/* Nested feature routes */}
-          <Route path="features/ai" element={<AIFeatures />} />
-          <Route path="features/social" element={<SocialFeatures />} />
-          <Route path="features/automation" element={<AutomationFeatures />} />
-          {/* Main routes */}
-          <Route path="social" element={<SocialPage/>} />
-          <Route path="pricing" element={<PricingPage/>} />
-          <Route path="about" element={<AboutPage/>} />
-        </Route>
-      </Routes>
-    </BrowserRouter>
+    <Routes>
+      <Route path="/" element={<Layout />}>
+        <Route index element={<LandingPage />} />
+
+        {/* Auth routes */}
+        <Route path="login" element={<LoginPage />} />
+        <Route path="register" element={<RegisterPage />} />
+
+        {/* Protected routes */}
+        <Route path="dashboard" element={
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        } />
+
+        {/* Public routes */}
+        <Route path="features" element={<FeaturesPage />} />
+        <Route path="features/ai" element={<AIFeatures />} />
+        <Route path="features/social" element={<SocialFeatures />} />
+        <Route path="features/automation" element={<AutomationFeatures />} />
+        <Route path="social" element={<SocialPage/>} />
+        <Route path="pricing" element={<PricingPage/>} />
+        <Route path="about" element={<AboutPage/>} />
+      </Route>
+    </Routes>
   )
 }
 

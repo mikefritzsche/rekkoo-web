@@ -1,5 +1,5 @@
 services:
-  app:
+  rekkoo-web:
     image: rekkoo-app-staging-${SAFE_BRANCH_NAME}:latest
     container_name: rekkoo-staging-${SAFE_BRANCH_NAME}
     labels:

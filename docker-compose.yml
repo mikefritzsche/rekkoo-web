@@ -1,7 +1,7 @@
 name: rekkoo-${DEPLOY_ENV}
 
 services:
-  app:
+  rekkoo-web:
     networks:
       - proxy
     restart: unless-stopped

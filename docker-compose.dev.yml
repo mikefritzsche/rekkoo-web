@@ -1,6 +1,6 @@
 # docker-compose.dev.yml
 services:
-  app:
+  rekkoo-web:
     image: rekkoo-app-dev-${SAFE_BRANCH_NAME}:latest
     container_name: rekkoo-dev-${SAFE_BRANCH_NAME}
     pull_policy: never
