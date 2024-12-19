@@ -1,7 +1,7 @@
 services:
-  rekkoo-web:
+  rekkoo-web-prod:
     image: rekkoo-app-prod-main:latest
-    container_name: rekkoo-prod
+    container_name: rekkoo-web-prod
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=proxy"
