@@ -5,7 +5,7 @@ import { AuthProvider } from './context/AuthContext'
 import './index.css'
 import App from './App.jsx'
 
-// v0.0.1 - force ci to build
+// v0.0.2 - force ci to build
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
