@@ -1,12 +1,12 @@
 services:
-  rekkoo-web-prod:
+  rekkoo-web:
     image: rekkoo-app-prod-main:latest
     container_name: rekkoo-web-prod
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=proxy"
-      - "traefik.http.services.rekkoo-web-prod.loadbalancer.server.port=80"
-      - "traefik.http.routers.rekkoo-web-prod.rule=Host(`rekkoo.com`) || Host(`www.rekkoo.com`)"
-      - "traefik.http.routers.rekkoo-web-prod.entrypoints=websecure"
-      - "traefik.http.routers.rekkoo-web-prod.tls=true"
-      - "traefik.http.routers.rekkoo-web-prod.service=rekkoo-web-prod"
+      - "traefik.http.services.rekkoo-web-frontend.loadbalancer.server.port=80"
+      - "traefik.http.routers.rekkoo-web-frontend.rule=Host(`rekkoo.com`) || Host(`www.rekkoo.com`)"
+      - "traefik.http.routers.rekkoo-web-frontend.entrypoints=websecure"
+      - "traefik.http.routers.rekkoo-web-frontend.tls=true"
+      - "traefik.http.routers.rekkoo-web-frontend.service=rekkoo-web-frontend"
