@@ -49,7 +49,7 @@ echo "Using $DOCKERFILE for build..."
 
 # 2. Build the Docker image.
 echo "Building Docker image..."
-docker build -t "rekkoo-app:$(git rev-parse HEAD)" \
+docker build --platform linux/amd64 -t "rekkoo-app:$(git rev-parse HEAD)" \
   --build-arg VITE_API_URL=${VITE_API_URL} \
   -f ${DOCKERFILE} .
 docker tag "rekkoo-app:$(git rev-parse HEAD)" "rekkoo-app-${ENVIRONMENT}-${SAFE_BRANCH_NAME}:latest"
