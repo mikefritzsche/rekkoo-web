@@ -24,3 +24,5 @@ For remote branches:
 Push to any branch and access via dev.rekkoo.com?remote=branch-name
 
 dev.rekkoo.com?remote=feature-branch
+
+- v0.0.1
