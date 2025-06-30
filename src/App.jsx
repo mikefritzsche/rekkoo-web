@@ -44,8 +44,9 @@ function App() {
         <Route path="social" element={<SocialPage/>} />
         <Route path="pricing" element={<PricingPage/>} />
         <Route path="about" element={<AboutPage/>} />
-        <Route path="terms" element={<TermsOfService />} />
+        <Route path="tos" element={<TermsOfService />} />
         <Route path="data-deletion" element={<DataDeletion />} />
+        <Route path="privacy" element={<PrivacyPolicy />} />
       </Route>
     </Routes>
   )
