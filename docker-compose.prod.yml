@@ -1,6 +1,7 @@
 services:
   rekkoo-web:
     image: rekkoo-app-prod-main:latest
+    platform: linux/amd64
     container_name: rekkoo-web-prod
     labels:
       - "traefik.enable=true"
