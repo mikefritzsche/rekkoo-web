@@ -13,7 +13,7 @@ const Layout = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-900">
+    <div className="min-h-screen bg-slate-900 flex flex-col">
       <nav className="border-b border-slate-800">
         <div className="container mx-auto px-4">
           <div className="flex h-16 items-center justify-between">
@@ -84,9 +84,25 @@ const Layout = () => {
       </nav>
 
       {/* Page Content */}
-      <main>
+      <main className="flex-grow">
         <Outlet />
       </main>
+
+      {/* Footer */}
+      <footer className="border-t border-slate-800 py-4">
+        <div className="container mx-auto px-4 text-center text-slate-400">
+          <p>&copy; {new Date().getFullYear()} Rekkoo. All rights reserved.</p>
+          <div className="mt-2">
+            <NavLink to="/terms" className="hover:text-white">
+              Terms of Service
+            </NavLink>
+            <span className="mx-2">|</span>
+            <NavLink to="/data-deletion" className="hover:text-white">
+              Data Deletion
+            </NavLink>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 };

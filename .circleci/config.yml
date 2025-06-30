@@ -144,7 +144,7 @@ workflows:
             - rekkoo-secrets
           filters:
             branches:
-              only: main
+              ignore: /.*/
       - deploy-staging:
           context:
             - hetzner-deploy-secrets
@@ -152,9 +152,7 @@ workflows:
             - rekkoo-secrets
           filters:
             branches:
-              ignore:
-                - main
-                - /.*dev.*/  # Ignore branches containing 'dev'
+              ignore: /.*/
       - deploy-dev:
           context:
             - hetzner-deploy-secrets
@@ -162,4 +160,4 @@ workflows:
             - rekkoo-secrets
           filters:
             branches:
-              only: /.*dev.*/  # Only run for branches containing 'dev'
+              ignore: /.*/
