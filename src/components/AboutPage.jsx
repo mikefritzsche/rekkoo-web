@@ -29,10 +29,10 @@ const AboutPage = () => {
   ];
 
   const stats = [
-    { label: "Active Users", value: "50k+" },
-    { label: "Lists Created", value: "1M+" },
-    { label: "Items Tracked", value: "10M+" },
-    { label: "Happy Customers", value: "99%" }
+    { label: "Active Users", value: "Coming Soon" },
+    { label: "Lists Created", value: "Coming Soon" },
+    { label: "Items Tracked", value: "Coming Soon" },
+    { label: "Happy Customers", value: "Coming Soon" }
   ];
 
   return (
@@ -108,12 +108,11 @@ const AboutPage = () => {
       </section>
 
       {/* Timeline Section */}
-      <section className="container mx-auto px-4 py-20">
+      {/* <section className="container mx-auto px-4 py-20">
         <h2 className="text-center text-3xl font-bold opacity-0 animate-[fadeIn_0.6s_ease-out_1s_forwards]">
           Our Journey
         </h2>
         <div className="relative mt-12">
-          {/* Timeline items */}
           {[
             { year: "2022", title: "The Idea", description: "Rekkoo was conceived as a modern solution to personal organization." },
             { year: "2023", title: "Launch", description: "First version of Rekkoo launched with core features." },
@@ -135,7 +134,7 @@ const AboutPage = () => {
             </div>
           ))}
         </div>
-      </section>
+      </section> */}
 
       {/* CTA Section */}
       <section className="bg-gradient-to-r from-purple-900 to-slate-800">

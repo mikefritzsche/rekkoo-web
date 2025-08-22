@@ -6,10 +6,11 @@ const PricingPage = () => {
     free: [
       "Create unlimited personal lists",
       "Basic categorization",
-      "Access to movie and TV show database",
+      "Access to Places, Books, Movie/TV, & Music databases",
       "Basic search functionality",
       "Mobile and web access",
-      "Up to 3 shared lists"
+      "Up to 3 shared lists",
+      "Offline access"
     ],
     pro: [
       "All Free features",
@@ -18,7 +19,6 @@ const PricingPage = () => {
       "Priority support",
       "Advanced search and filters",
       "Custom categories",
-      "Offline access",
       "List analytics and insights"
     ],
     teams: [
@@ -86,8 +86,8 @@ const PricingPage = () => {
                 </div>
                 <p className="mt-2 text-slate-400">Perfect for power users</p>
                 <div className="mt-6">
-                  <span className="text-4xl font-bold">$9.99</span>
-                  <span className="text-slate-400">/month</span>
+                  <span className="text-4xl font-bold">$29.99</span>
+                  <span className="text-slate-400">/year</span>
                 </div>
               </div>
 

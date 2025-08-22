@@ -1,5 +1,5 @@
 import React from 'react';
-import { Download, Brain, Users, Zap, ArrowRight, Check } from 'lucide-react';
+import { Download, Brain, Users, Zap, ArrowRight, Check, Smartphone } from 'lucide-react';
 
 const LandingPage = () => {
   return (
@@ -11,15 +11,26 @@ const LandingPage = () => {
             Smart lists for everything you love
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-lg text-slate-300 opacity-0 animate-[fadeIn_0.6s_ease-out_0.8s_forwards]">
-            Experience the next generation of personal organization. Powered by AI, enriched with social features, and designed to make your life beautifully organized.
+            Experience the next generation of personal organization. Available on iOS, Android, and the Web.
           </p>
-          <div className="mt-8 opacity-0 animate-[fadeIn_0.6s_ease-out_1s_forwards]">
+          <div className="mt-8 flex justify-center space-x-4 opacity-0 animate-[fadeIn_0.6s_ease-out_1s_forwards]">
             <a
               href="#"
-              className="group inline-flex items-center rounded-lg bg-blue-600 px-8 py-4 font-semibold text-white transition-all duration-300 hover:bg-blue-500"
+              className="group inline-flex items-center rounded-lg bg-purple-600 px-6 py-3 font-semibold text-white transition-all duration-300 hover:bg-purple-500 hover:scale-105"
             >
-              <Download className="mr-2 h-5 w-5 transition-transform duration-300 group-hover:-translate-y-1" />
-              Download Now
+              <Download className="mr-2 h-5 w-5" /> App Store
+            </a>
+            <a
+              href="#"
+              className="group inline-flex items-center rounded-lg bg-purple-600 px-6 py-3 font-semibold text-white transition-all duration-300 hover:bg-purple-500 hover:scale-105"
+            >
+              <Download className="mr-2 h-5 w-5" /> Google Play
+            </a>
+            <a
+              href="/login"
+              className="group inline-flex items-center rounded-lg bg-gray-600 px-6 py-3 font-semibold text-white transition-all duration-300 hover:bg-gray-500 hover:scale-105"
+            >
+              <Smartphone className="mr-2 h-5 w-5" /> Web App
             </a>
           </div>
         </div>
@@ -109,10 +120,26 @@ const LandingPage = () => {
           <p className="mx-auto mt-4 max-w-2xl text-lg text-slate-300">
             Join thousands of users revolutionizing their personal organization
           </p>
-          <button className="mt-8 group inline-flex items-center rounded-lg bg-purple-600 px-8 py-4 font-semibold text-white transition-all duration-300 hover:bg-purple-500 hover:scale-105">
-            <Download className="mr-2 h-5 w-5 transition-transform duration-300 group-hover:-translate-y-1" />
-            Download on the App Store
-          </button>
+          <div className="mt-8 flex justify-center space-x-4">
+            <a
+              href="#"
+              className="group inline-flex items-center rounded-lg bg-purple-600 px-6 py-3 font-semibold text-white transition-all duration-300 hover:bg-purple-500 hover:scale-105"
+            >
+              <Download className="mr-2 h-5 w-5" /> App Store
+            </a>
+            <a
+              href="#"
+              className="group inline-flex items-center rounded-lg bg-purple-600 px-6 py-3 font-semibold text-white transition-all duration-300 hover:bg-purple-500 hover:scale-105"
+            >
+              <Download className="mr-2 h-5 w-5" /> Google Play
+            </a>
+            <a
+              href="/login"
+              className="group inline-flex items-center rounded-lg bg-gray-600 px-6 py-3 font-semibold text-white transition-all duration-300 hover:bg-gray-500 hover:scale-105"
+            >
+              <Smartphone className="mr-2 h-5 w-5" /> Launch Web App
+            </a>
+          </div>
           <p className="mt-4 text-sm text-slate-400">Free download • Premium features available</p>
         </div>
       </section>

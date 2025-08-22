@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Users, Share2, Trophy, MessageSquare, Heart, Globe, ArrowRight, Download } from 'lucide-react';
+import { Users, Share2, MessageSquare, Heart, Globe, ArrowRight, Download } from 'lucide-react';
 
 const SocialPage = () => {
   const [hoveredFeature, setHoveredFeature] = useState(null);
@@ -14,11 +14,6 @@ const SocialPage = () => {
       icon: Share2,
       title: "Share & Discover",
       description: "Share your curated lists publicly or privately. Find new recommendations from people with similar interests."
-    },
-    {
-      icon: Trophy,
-      title: "Group Challenges",
-      description: "Join monthly challenges with friends. Complete movie marathons, reading challenges, or restaurant tours together."
     },
     {
       icon: MessageSquare,
@@ -79,10 +74,12 @@ const SocialPage = () => {
           <div className="grid gap-8 md:grid-cols-2">
             <div className="rounded-lg bg-slate-700 p-8 opacity-0 animate-[slideInLeft_0.5s_ease-out_0.2s_forwards]">
               <h2 className="text-2xl font-bold">Community Features</h2>
-              <ul className="mt-6 space-y-4">
+              <ul className="mt-6 space-y-6">
                 <li className="flex items-start">
-                  <div className="mr-4 rounded-full bg-purple-600/20 p-1">
-                    <Users className="h-5 w-5 text-purple-500" />
+                  <div className="mr-4 flex-shrink-0">
+                    <div className="flex items-center justify-center rounded-full bg-purple-600/20 p-3">
+                      <Users className="h-6 w-6 text-purple-500" />
+                    </div>
                   </div>
                   <div>
                     <h3 className="font-semibold">Group Lists</h3>
@@ -90,8 +87,10 @@ const SocialPage = () => {
                   </div>
                 </li>
                 <li className="flex items-start">
-                  <div className="mr-4 rounded-full bg-purple-600/20 p-1">
-                    <Share2 className="h-5 w-5 text-purple-500" />
+                  <div className="mr-4 flex-shrink-0">
+                    <div className="flex items-center justify-center rounded-full bg-purple-600/20 p-3">
+                      <Share2 className="h-6 w-6 text-purple-500" />
+                    </div>
                   </div>
                   <div>
                     <h3 className="font-semibold">Public Sharing</h3>
@@ -99,8 +98,10 @@ const SocialPage = () => {
                   </div>
                 </li>
                 <li className="flex items-start">
-                  <div className="mr-4 rounded-full bg-purple-600/20 p-1">
-                    <MessageSquare className="h-5 w-5 text-purple-500" />
+                  <div className="mr-4 flex-shrink-0">
+                    <div className="flex items-center justify-center rounded-full bg-purple-600/20 p-3">
+                      <MessageSquare className="h-6 w-6 text-purple-500" />
+                    </div>
                   </div>
                   <div>
                     <h3 className="font-semibold">Comments & Reviews</h3>
@@ -111,10 +112,12 @@ const SocialPage = () => {
             </div>
             <div className="rounded-lg bg-slate-700 p-8 opacity-0 animate-[slideInRight_0.5s_ease-out_0.4s_forwards]">
               <h2 className="text-2xl font-bold">Privacy Controls</h2>
-              <ul className="mt-6 space-y-4">
+              <ul className="mt-6 space-y-6">
                 <li className="flex items-start">
-                  <div className="mr-4 rounded-full bg-blue-600/20 p-1">
-                    <Users className="h-5 w-5 text-blue-500" />
+                  <div className="mr-4 flex-shrink-0">
+                    <div className="flex items-center justify-center rounded-full bg-blue-600/20 p-3">
+                      <Users className="h-6 w-6 text-blue-500" />
+                    </div>
                   </div>
                   <div>
                     <h3 className="font-semibold">Granular Permissions</h3>
@@ -122,8 +125,10 @@ const SocialPage = () => {
                   </div>
                 </li>
                 <li className="flex items-start">
-                  <div className="mr-4 rounded-full bg-blue-600/20 p-1">
-                    <Share2 className="h-5 w-5 text-blue-500" />
+                  <div className="mr-4 flex-shrink-0">
+                    <div className="flex items-center justify-center rounded-full bg-blue-600/20 p-3">
+                      <Share2 className="h-6 w-6 text-blue-500" />
+                    </div>
                   </div>
                   <div>
                     <h3 className="font-semibold">Private Lists</h3>
@@ -131,8 +136,10 @@ const SocialPage = () => {
                   </div>
                 </li>
                 <li className="flex items-start">
-                  <div className="mr-4 rounded-full bg-blue-600/20 p-1">
-                    <Globe className="h-5 w-5 text-blue-500" />
+                  <div className="mr-4 flex-shrink-0">
+                    <div className="flex items-center justify-center rounded-full bg-blue-600/20 p-3">
+                      <Globe className="h-6 w-6 text-blue-500" />
+                    </div>
                   </div>
                   <div>
                     <h3 className="font-semibold">Activity Control</h3>
@@ -160,7 +167,7 @@ const SocialPage = () => {
               </button>
               <p className="text-sm text-slate-400">Free download • Premium features available</p>
             </div>
-            <div className="mt-8 flex justify-center space-x-8">
+            {/* <div className="mt-8 flex justify-center space-x-8">
               <div className="text-center">
                 <p className="text-3xl font-bold text-purple-400">10k+</p>
                 <p className="text-sm text-slate-400">Active Users</p>
@@ -173,7 +180,7 @@ const SocialPage = () => {
                 <p className="text-3xl font-bold text-purple-400">100k+</p>
                 <p className="text-sm text-slate-400">Recommendations</p>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       </section>

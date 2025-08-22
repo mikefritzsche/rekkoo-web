@@ -12,10 +12,9 @@ import SocialFeatures from "./components/features/SocialFeatures.jsx";
 import AutomationFeatures from "./components/features/AutomationFeatures.jsx";
 import LoginPage from './components/auth/LoginPage';
 import RegisterPage from './components/auth/RegisterPage';
-import Dashboard from './components/Dashboard';
-import ProtectedRoute from './components/auth/ProtectedRoute';
 import TermsOfService from "./components/TermsOfService.jsx";
 import DataDeletion from "./components/DataDeletion.jsx";
+import PrivacyPolicy from "./components/PrivacyPolicy.jsx";
 
 function App() {
   useTitle()
@@ -29,13 +28,6 @@ function App() {
         <Route path="login" element={<LoginPage />} />
         <Route path="register" element={<RegisterPage />} />
 
-        {/* Protected routes */}
-        <Route path="dashboard" element={
-          <ProtectedRoute>
-            <Dashboard />
-          </ProtectedRoute>
-        } />
-
         {/* Public routes */}
         <Route path="features" element={<FeaturesPage />} />
         <Route path="features/ai" element={<AIFeatures />} />
@@ -44,7 +36,7 @@ function App() {
         <Route path="social" element={<SocialPage/>} />
         <Route path="pricing" element={<PricingPage/>} />
         <Route path="about" element={<AboutPage/>} />
-        <Route path="tos" element={<TermsOfService />} />
+        <Route path="terms" element={<TermsOfService />} />
         <Route path="data-deletion" element={<DataDeletion />} />
         <Route path="privacy" element={<PrivacyPolicy />} />
       </Route>
