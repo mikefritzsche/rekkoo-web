@@ -75,7 +75,7 @@ const SocialPage = () => {
             <div className="rounded-lg bg-slate-700 p-8 opacity-0 animate-[slideInLeft_0.5s_ease-out_0.2s_forwards]">
               <h2 className="text-2xl font-bold">Community Features</h2>
               <ul className="mt-6 space-y-6">
-                <li className="flex items-start">
+                <li className="flex items-center">
                   <div className="mr-4 flex-shrink-0">
                     <div className="flex items-center justify-center rounded-full bg-purple-600/20 p-3">
                       <Users className="h-6 w-6 text-purple-500" />
@@ -86,7 +86,7 @@ const SocialPage = () => {
                     <p className="text-slate-300">Create lists that multiple people can edit and manage together</p>
                   </div>
                 </li>
-                <li className="flex items-start">
+                <li className="flex items-center">
                   <div className="mr-4 flex-shrink-0">
                     <div className="flex items-center justify-center rounded-full bg-purple-600/20 p-3">
                       <Share2 className="h-6 w-6 text-purple-500" />
@@ -97,7 +97,7 @@ const SocialPage = () => {
                     <p className="text-slate-300">Share your lists with the world or keep them private</p>
                   </div>
                 </li>
-                <li className="flex items-start">
+                <li className="flex items-center">
                   <div className="mr-4 flex-shrink-0">
                     <div className="flex items-center justify-center rounded-full bg-purple-600/20 p-3">
                       <MessageSquare className="h-6 w-6 text-purple-500" />
@@ -113,7 +113,7 @@ const SocialPage = () => {
             <div className="rounded-lg bg-slate-700 p-8 opacity-0 animate-[slideInRight_0.5s_ease-out_0.4s_forwards]">
               <h2 className="text-2xl font-bold">Privacy Controls</h2>
               <ul className="mt-6 space-y-6">
-                <li className="flex items-start">
+                <li className="flex items-center">
                   <div className="mr-4 flex-shrink-0">
                     <div className="flex items-center justify-center rounded-full bg-blue-600/20 p-3">
                       <Users className="h-6 w-6 text-blue-500" />
@@ -124,7 +124,7 @@ const SocialPage = () => {
                     <p className="text-slate-300">Control who can view and edit your lists</p>
                   </div>
                 </li>
-                <li className="flex items-start">
+                <li className="flex items-center">
                   <div className="mr-4 flex-shrink-0">
                     <div className="flex items-center justify-center rounded-full bg-blue-600/20 p-3">
                       <Share2 className="h-6 w-6 text-blue-500" />
@@ -135,7 +135,7 @@ const SocialPage = () => {
                     <p className="text-slate-300">Keep personal lists completely private</p>
                   </div>
                 </li>
-                <li className="flex items-start">
+                <li className="flex items-center">
                   <div className="mr-4 flex-shrink-0">
                     <div className="flex items-center justify-center rounded-full bg-blue-600/20 p-3">
                       <Globe className="h-6 w-6 text-blue-500" />
